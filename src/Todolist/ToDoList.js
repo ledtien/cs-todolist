@@ -1,14 +1,12 @@
 import React, { Component } from "react";
 import { Container } from "./Containers/Container";
 import { ThemeProvider } from "styled-components";
-import { ToDoListDarkTheme } from "./Themes/ToDoListDarkTheme";
-import { ToDoListLightTheme } from "./Themes/ToDoListLightTheme";
-import { ToDoListPrimaryTheme } from "./Themes/ToDoListPrimaryTheme";
+
 import { Dropdown } from "./Components/Dropdown";
-import { Heading1, Heading2, Heading3, Heading4 } from ".//Components/Heading";
-import { Label, Input, TextField } from "./Components/TextField";
+import { Heading1, Heading3 } from ".//Components/Heading";
+import { TextField } from "./Components/TextField";
 import { Button } from "./Components/Button";
-import { Table, Thead, Tbody, Tr, Th, Td } from "./Components/Table";
+import { Table, Thead, Tr, Th } from "./Components/Table";
 import { connect } from "react-redux";
 import {
   AddTaskAction,
@@ -170,7 +168,6 @@ class ToDoList extends Component {
                       taskName: "",
                     },
                     () => {
-                      console.log("taskname", taskName);
                       this.props.dispatch(updateTask(taskName));
                     }
                   );
@@ -196,7 +193,7 @@ class ToDoList extends Component {
       </div>
     );
   }
-  componentDidUpdate(prevProps, currentState) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.tasksEdit.id !== this.props.tasksEdit.id) {
       this.setState({
         taskName: this.props.tasksEdit.taskName,
