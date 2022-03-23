@@ -23,6 +23,7 @@ import { arrTheme } from "./Themes/ThemeManager";
 class ToDoList extends Component {
   state = {
     taskName: "",
+    disabled: true,
   };
 
   renderTaskToDo = () => {
@@ -35,7 +36,14 @@ class ToDoList extends Component {
             <Th className="text-right">
               <Button
                 onClick={() => {
-                  this.props.dispatch(editTask(task));
+                  this.setState(
+                    {
+                      disabled: false,
+                    },
+                    () => {
+                      this.props.dispatch(editTask(task));
+                    }
+                  );
                 }}
                 className="ml-1"
               >
@@ -141,15 +149,38 @@ class ToDoList extends Component {
               <i className="fa fa-plus"></i>
               Add task
             </Button>
-            <Button
-              onClick={() => {
-                this.props.dispatch(updateTask(this.state.taskName));
-              }}
-              className="ml-2"
-            >
-              <i className="fa fa-upload"></i>
-              Update task
-            </Button>
+            {this.state.disabled ? (
+              <Button
+                disabled
+                onClick={() => {
+                  this.props.dispatch(updateTask(this.state.taskName));
+                }}
+                className="ml-2"
+              >
+                <i className="fa fa-upload"></i>
+                Update task
+              </Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  let { taskName } = this.state;
+                  this.setState(
+                    {
+                      disabled: true,
+                      taskName: "",
+                    },
+                    () => {
+                      console.log("taskname", taskName);
+                      this.props.dispatch(updateTask(taskName));
+                    }
+                  );
+                }}
+                className="ml-2"
+              >
+                <i className="fa fa-upload"></i>
+                Update task
+              </Button>
+            )}
             <hr style={{ borderColor: "white" }} />
             <Heading3>Tasks to do:</Heading3>
             <Table>
@@ -165,7 +196,6 @@ class ToDoList extends Component {
       </div>
     );
   }
-
   componentDidUpdate(prevProps, currentState) {
     if (prevProps.tasksEdit.id !== this.props.tasksEdit.id) {
       this.setState({
