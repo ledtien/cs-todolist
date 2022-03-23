@@ -10,7 +10,15 @@ import { Label, Input, TextField } from "./Components/TextField";
 import { Button } from "./Components/Button";
 import { Table, Thead, Tbody, Tr, Th, Td } from "./Components/Table";
 import { connect } from "react-redux";
-import { AddTaskAction } from "../redux/actions/ToDoListAction";
+import {
+  AddTaskAction,
+  changeThemeAction,
+  deleteTask,
+  doneTask,
+  editTask,
+  updateTask,
+} from "../redux/actions/ToDoListAction";
+import { arrTheme } from "./Themes/ThemeManager";
 
 class ToDoList extends Component {
   state = {
@@ -25,13 +33,28 @@ class ToDoList extends Component {
           <Tr key={index}>
             <Th style={{ verticalAlign: "middle" }}>{task.taskName}</Th>
             <Th className="text-right">
-              <Button className="ml-1">
+              <Button
+                onClick={() => {
+                  this.props.dispatch(editTask(task));
+                }}
+                className="ml-1"
+              >
                 <i className="fa fa-edit"></i>
               </Button>
-              <Button className="ml-1">
+              <Button
+                onClick={() => {
+                  this.props.dispatch(doneTask(task.id));
+                }}
+                className="ml-1"
+              >
                 <i className="fa fa-check"></i>
               </Button>
-              <Button className="ml-1">
+              <Button
+                onClick={() => {
+                  this.props.dispatch(deleteTask(task.id));
+                }}
+                className="ml-1"
+              >
                 <i className="fa fa-trash"></i>
               </Button>
             </Th>
@@ -48,7 +71,12 @@ class ToDoList extends Component {
           <Tr key={index}>
             <Th style={{ verticalAlign: "middle" }}>{task.taskName}</Th>
             <Th className="text-right">
-              <Button className="ml-1">
+              <Button
+                onClick={() => {
+                  this.props.dispatch(deleteTask(task.id));
+                }}
+                className="ml-1"
+              >
                 <i className="fa fa-trash"></i>
               </Button>
             </Th>
@@ -56,18 +84,38 @@ class ToDoList extends Component {
         );
       });
   };
+
+  renderTheme = () => {
+    return arrTheme.map((theme, index) => {
+      return (
+        <option key={index} value={theme.id}>
+          {theme.name}
+        </option>
+      );
+    });
+  };
+
+  componentWillReceiveProps(newProps) {
+    this.setState({
+      taskName: newProps.tasksEdit.taskName,
+    });
+  }
   render() {
     return (
       <div>
         <ThemeProvider theme={this.props.themeToDoList}>
           <Container className="container">
-            <Dropdown>
-              <option value="">Dark theme</option>
-              <option value="">Light theme</option>
-              <option value="">Primary theme</option>
+            <Dropdown
+              onChange={(e) => {
+                let { value } = e.target;
+                this.props.dispatch(changeThemeAction(value));
+              }}
+            >
+              {this.renderTheme()}
             </Dropdown>
             <Heading1 className="m-3">To do list</Heading1>
             <TextField
+              value={this.state.taskName}
               onChange={(e) => {
                 this.setState({
                   taskName: e.target.value,
@@ -93,7 +141,12 @@ class ToDoList extends Component {
               <i className="fa fa-plus"></i>
               Add task
             </Button>
-            <Button className="ml-2">
+            <Button
+              onClick={() => {
+                this.props.dispatch(updateTask(this.state.taskName));
+              }}
+              className="ml-2"
+            >
               <i className="fa fa-upload"></i>
               Update task
             </Button>
@@ -112,12 +165,21 @@ class ToDoList extends Component {
       </div>
     );
   }
+
+  componentDidUpdate(prevProps, currentState) {
+    if (prevProps.tasksEdit.id !== this.props.tasksEdit.id) {
+      this.setState({
+        taskName: this.props.tasksEdit.taskName,
+      });
+    }
+  }
 }
 
 const mapStateToProps = (state) => {
   return {
     themeToDoList: state.ToDoListReducer.themeToDoList,
     tasksList: state.ToDoListReducer.tasksList,
+    tasksEdit: state.ToDoListReducer.tasksEdit,
   };
 };
 

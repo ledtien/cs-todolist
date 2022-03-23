@@ -14,7 +14,7 @@ export const arrTheme = [
     theme: ToDoListLightTheme,
   },
   {
-    id: 1,
+    id: 3,
     name: "Primary theme",
     theme: ToDoListPrimaryTheme,
   },
